@@ -1,0 +1,131 @@
+<!DOCTYPE>
+<html>
+<head>
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script>
+$(document).ready(function(){
+    // 삭제
+    $('#btn_remove').on('click',function(){
+        var ck = new Array();	//let ck = [];
+        $('.ck:checked').each(function(index,item){
+            ck.push($(item).val());
+        });
+        $.ajax({
+            url:'/remove',
+            type:'GET',
+            data:{ck:ck},
+            success:function(row){
+                alert(row+'행 삭제');
+                $('#btn_list').trigger('click');
+            }
+        });
+    });
+ 
+    // 추가
+    $('#btn_add').on('click',function(){	//$('#btn_add').click(()=>{})
+        var id = $('#id').val();
+        var pw = $('#pw').val();
+        var name = $('#name').val();
+        var age = $('#age').val();
+        var gender = $('#gender').val();
+ 
+        $.ajax({	//RPC 함수 호출 / 비동기 호출
+            url:'/add',
+            type:'POST',
+            data:{id:id,pw:pw,name:name,age:age,gender:gender},
+            success:function(row){	//콜백함수, 리턴값이 콜백함수의 매개변수로 들어옴, 자바스크립트 객체로 바뀌어 들어옴
+                alert(row+'행 추가');
+                $('#btn_list').trigger('click');	//btn_list 버튼을 자동으로 클릭해줌
+            }
+        });
+    });
+    // 수정
+    $('#btn_modify').on('click',function(){
+        var id = $('#id').val();
+        var pw = $('#pw').val();
+        var name = $('#name').val();
+        var age = $('#age').val();
+        var gender = $('#gender').val();
+ 
+        $.ajax({
+            url:'/modifyById',
+            type:'POST',
+            data:{id:id,pw:pw,name:name,age:age,gender:gender},
+            success:function(data){
+                alert(data+'님 수정');
+                $('#btn_list').trigger('click');
+            }
+        });
+    });
+    // 목록
+    $('#btn_list').on('click',function(){
+        $.ajax({
+            url:'/list',
+            type:'GET',
+            success:function(data){	//success:(data)=>{, var(함수주기)안씀 let(블록주기)씀
+                $('#list').empty();
+                $(data).each(function(index,item){	//each = forEach
+                    $('#list').append('<tr>');	//tr태그를 추가
+                    $('#list').append('<td><input type="checkbox" class="ck" value="'+item.id+'"></td>');
+                    $('#list').append('<td>'+item.id+'</td>');
+                    $('#list').append('<td>'+item.pw+'</td>');
+                    $('#list').append('<td>'+item.name+'</td>');
+                    $('#list').append('<td>'+item.age+'</td>');
+                    $('#list').append('<td>'+item.gender+'</td>');
+                    $('#list').append('</tr>');
+                });
+            }
+        });
+    });
+});
+</script>
+</head>
+<body>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>pw</th>
+                <th>name</th>
+                <th>age</th>
+                <th>gender</th>
+                <th>추가</th>
+                <th>수정</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input type="text" id="id"></td>
+                <td><input type="password" id="pw"></td>
+                <td><input type="text" id="name"></td>
+                <td><input type="text" id="age"></td>
+                <td>
+                    <select id="gender">
+                        <option value="m">남</option>
+                        <option value="f">여</option>
+                    </select>
+                </td>
+                <td><button id="btn_add">add</button></td>
+                <td><button id="btn_modify">modify</button></td>
+            </tr>
+        </tbody>
+    </table>
+ 
+    <button id="btn_list">회원리스트</button>
+    <table border="1">
+        <thead>
+            <tr>
+                <th></th>
+                <th>id</th>
+                <th>pw</th>
+                <th>name</th>
+                <th>age</th>
+                <th>gender</th>
+            </tr>
+        </thead>
+        <tbody id="list">
+        </tbody>
+    </table>
+    <button id="btn_remove">remove</button>
+</body>
+</html>
